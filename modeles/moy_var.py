@@ -21,7 +21,7 @@ class RendementAnalyzer:
         Returns:
             Le rendement journalier
         """
-        return (p1 - p2) / p2
+        return np.log(p1/p2)
 
     def create_rt_list(self, price_list):
         """
@@ -38,7 +38,7 @@ class RendementAnalyzer:
             
         returns_list = []
         for i in range(len(price_list) - 1):
-            return_rate = self.calculate_return(price_list[i + 1], price_list[i])
+            return_rate = self.calculate_rt(price_list[i + 1], price_list[i])
             returns_list.append(return_rate)
         return returns_list
 
@@ -70,7 +70,7 @@ class RendementAnalyzer:
         if len(returns_list) < 2:
             return 0
             
-        mean = self.mean_return(returns_list)
+        mean = self.mean_rt(returns_list)
         variance_sum = sum((r - mean) ** 2 for r in returns_list)
         return variance_sum / (len(returns_list) - 1)
 
@@ -96,11 +96,11 @@ class RendementAnalyzer:
         Returns:
             Dictionnaire contenant les statistiques des rendements
         """
-        returns = self.create_returns_list(price_list)
+        returns = self.create_rt_list(price_list)
         
         return {
             'returns': returns,
-            'mean_return': self.mean_return(returns),
+            'mean_return': self.mean_rt(returns),
             'variance': self.variance(returns),
             'standard_deviation': self.standard_deviation(returns),
             'count': len(returns)
