@@ -62,7 +62,5 @@ L’objectif est de comprendre comment modéliser un prix d’action à l’aide
   - yfinance — récupération des données de marché
   - scipy — outils statistiques (si besoin)
 
----
 
-## Structure du projet
 
