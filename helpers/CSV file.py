@@ -49,7 +49,7 @@ if subset_clean:
         df = df[df["Volume"] > 0]
 
 if "Date" in df.columns:
-    df["Date"] = pd.to_datetime(df["Date"], errors="coerce").dt.date.astype(str)
+    df["Date"] = pd.to_datetime(df["Date"], errors = "coerce").dt.date.astype(str)
     df = df.sort_values("Date")
 
 df.to_csv(OUT_FILE, index=False)
