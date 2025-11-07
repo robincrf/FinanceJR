@@ -3,21 +3,26 @@ import pandas as pd
 import yfinance as yf
 from pathlib import Path
 
-TICKER = "KER"
+TICKER = "KER.PA"
 START = "2025-01-01"
-END = (dt.date.today() + dt.timedelta(day = 1)).isoformat()
+END = (dt.date.today() + dt.timedelta(days = 1)).isoformat()
 
 OUT_DIR = Path("data")
-OUT_DIR.mkdir(parents = True, exists_ok = True)
+OUT_DIR.mkdir(parents = True, exist_ok = True)
 OUT_FILE = OUT_DIR / "KER_2025.csv"
 
 print (f"Téléchargement {TICKER} de {START} à {END}")
-DataFrame = yf.download(TICKER, start = START, end = END, auto_adjust = False)
+df = yf.download(TICKER, start = START, end = END, auto_adjust = False)
 
-if DataFrame.empty :
+if df.empty :
     raise SystemExit("Aucune donnée reçue")
 
-DataFrame = DataFrame.reset_index()
+df = df.reset_index()
+
+if isinstance(df.columns, pd.MultiIndex):
+    df.columns = df.columns.get_level_values(0)
+
+print("Colonnes après flatten :", list(df.columns))  # debug
 
 rename_map = {
     "Date": "Date",
@@ -28,20 +33,29 @@ rename_map = {
     "Adj Close": "AdjClose",
     "Volume": "Volume",
 }
+df = df.rename(columns=rename_map)
 
-rename_map = {...} + DataFrame.rename(columns = rename_map)
+if "AdjClose" not in df.columns and "Close" in df.columns:
+    df["AdjClose"] = df["Close"]
 
-cols = ["Date", "Open", "High", "Low", "Close", "AdjClose", "Volume"]
-DataFrame = DataFrame[cols]
+wanted = ["Date", "Open", "High", "Low", "Close", "AdjClose", "Volume"]
+present = [c for c in wanted if c in df.columns]
+df = df[present]
 
-DataFrame = DataFrame.dropna(subset=["Open", "High", "Low", "Close", "Volume"])
-DataFrame = DataFrame[DataFrame["Volume"] > 0]
+subset_clean = [c for c in ["Open", "High", "Low", "Close", "Volume"] if c in df.columns]
+if subset_clean:
+    df = df.dropna(subset=subset_clean)
+    if "Volume" in df.columns:
+        df = df[df["Volume"] > 0]
 
-DataFrame["Date"] = pd.todatetime(DataFrame["Date"]).dt.date.astype(str)
-DataFrame = DataFrame.sort_values("Date")
+if "Date" in df.columns:
+    df["Date"] = pd.to_datetime(df["Date"], errors="coerce").dt.date.astype(str)
+    df = df.sort_values("Date")
 
-DataFrame.to_csv(OUT_FILE, index = False)
-
-print (DataFrame.head().to_string(index = False))
-print (f"Lignes : {len(DataFrame)} | Priode : {DataFrame["Date"].min()} -> {DataFrame["Date"].max()}")
-print ("Colonnes : ", ", ".join(DataFrame.columns))
+df.to_csv(OUT_FILE, index=False)
+print(f"Fichier sauvegardé -> {OUT_FILE.resolve()}")
+print("\nAperçu :")
+print(df.head().to_string(index=False))
+print("\nInfos :")
+print(f"Lignes : {len(df)} | Période : {df['Date'].min()} -> {df['Date'].max()}")
+print("Colonnes :", ", ".join(df.columns))
