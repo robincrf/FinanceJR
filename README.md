@@ -29,10 +29,6 @@ L’objectif est de comprendre comment modéliser un prix d’action à l’aide
 
 3. **Simulation**  
    Génération de plusieurs trajectoires futures du cours avec le modèle de Mouvement Brownien Géométrique :  
-   \[
-   S_t = S_0 \cdot e^{(\mu - 0.5\sigma^2)t + \sigma W_t}
-   \]  
-   où \( W_t \) suit une loi normale centrée réduite.
 
 4. **Comparaison**  
    Comparaison des cours simulés et des cours réels sur la même période.  
