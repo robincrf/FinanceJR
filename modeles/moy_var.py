@@ -21,7 +21,7 @@ class RendementAnalyzer:
         Returns:
             Le rendement journalier
         """
-        return np.log(p1/p2)
+        return (p1 - p2) / p1
 
     def create_rt_list(self, price_list):
         """
@@ -38,7 +38,7 @@ class RendementAnalyzer:
             
         returns_list = []
         for i in range(len(price_list) - 1):
-            return_rate = self.calculate_rt(price_list[i + 1], price_list[i])
+            return_rate = self.calculate_rt(price_list[i], price_list[i+1])
             returns_list.append(return_rate)
         return returns_list
 

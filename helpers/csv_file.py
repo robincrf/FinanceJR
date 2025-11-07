@@ -3,13 +3,13 @@ import pandas as pd
 import yfinance as yf
 from pathlib import Path
 
-TICKER = "KER.PA"
+TICKER = "AAPL"
 START = "2025-01-01"
 END = (dt.date.today() + dt.timedelta(days = 1)).isoformat()
 
 OUT_DIR = Path("data")
 OUT_DIR.mkdir(parents = True, exist_ok = True)
-OUT_FILE = OUT_DIR / "KER_2025.csv"
+OUT_FILE = OUT_DIR / "AAPL_2025.csv"
 
 def loadcsv():
     print (f"Téléchargement {TICKER} de {START} à {END}")
